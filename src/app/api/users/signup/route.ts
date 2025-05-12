@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 
 
-connect()
+connect();
 
 
 export async function POST(request: NextRequest){

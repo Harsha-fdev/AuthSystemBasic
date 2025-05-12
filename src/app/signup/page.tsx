@@ -2,20 +2,47 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { axios } from "axios";
+import toast from 'react-hot-toast'
+import axios from "axios";
 
 export default function SignUp() {
+  const router = useRouter();
   const [user, setUser] = useState({
     email: "",
     password: "",
     username: "",
   });
+  const [buttonDisabled , setbuttonDisabled] = useState(false);
+  const [loading , setLoading] = useState(false);
 
-  const onSignup = async () => {};
+  const onSignup = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.post("/api/users/signup" , user);
+        console.log('signup success' , response.data);
+        router.push("/login");
+      } 
+      catch (error: any) {
+        console.log("Signup falied" , error.message)
+        toast.error(error.message)
+      }
+      finally{
+
+      }
+  };
+
+  useEffect(() => {
+    if(user.username.length > 0 && user.email.length > 0 && user.password.length > 0){
+      setbuttonDisabled(false);
+    }
+    else{
+      setbuttonDisabled(true);
+    }
+  } , [user])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-center text-2xl text-black">Signup</h1>
+      <h1 className="text-center text-2xl text-white">{loading ? "Processing..." : "Signup"}</h1>
       <hr />
       <hr />
       <label htmlFor="username">username</label>
@@ -51,7 +78,7 @@ export default function SignUp() {
         autoComplete="current-password"
       />
       <hr />
-      <button onClick={onSignup} className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 hover:bg-black hover:text-white">SignUp here</button>
+      <button onClick={onSignup} className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 hover:bg-black hover:text-white">{buttonDisabled ? "you can't Signup" : "Signup"}</button>
       <Link href={'/login'}>Visit login page</Link>
     </div>
   );
